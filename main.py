@@ -6,6 +6,7 @@ import numpy as np
 
 def read_idx_images(filename):
     with open(filename, 'rb') as f:
+        # read the magic number and dimensions
         magic, num, rows, cols = struct.unpack('>IIII', f.read(16))
         images = np.frombuffer(f.read(), dtype=np.uint8)
         images = images.reshape(num, rows, cols)
