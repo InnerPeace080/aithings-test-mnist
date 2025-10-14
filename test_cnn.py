@@ -67,6 +67,13 @@ with torch.no_grad():
     print(f'Recall: {recall:.4f}')
     print(f'F1-score: {f1:.4f}')
 
+    # write evaluation metrics to a file
+    with open('cnn_evaluation.txt', 'w') as f:
+        f.write(f'Accuracy: {accuracy:.2f}%\n')
+        f.write(f'Precision: {precision:.4f}\n')
+        f.write(f'Recall: {recall:.4f}\n')
+        f.write(f'F1-score: {f1:.4f}\n')
+
     # display conv filter 3*3s of the first layer
     filters = model.conv1.weight.data.cpu().numpy()
     fig, axes = plt.subplots(4, 4, figsize=(6, 6))
