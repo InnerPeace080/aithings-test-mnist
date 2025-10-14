@@ -49,4 +49,4 @@ train_dataset = MNISTDataset(train_images, train_labels)
 test_dataset = MNISTDataset(test_images, test_labels)
 
 train_loader = DataLoader(train_dataset, batch_size=64, shuffle=True)
-test_loader = DataLoader(test_dataset, batch_size=128)
+test_loader = DataLoader(test_dataset, batch_size=10000)

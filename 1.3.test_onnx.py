@@ -57,17 +57,9 @@ recall = recall_score(labels, predicted_class.flatten(), average='weighted')
 f1 = f1_score(labels, predicted_class.flatten(), average='weighted')
 print(f'Precision: {precision:.4f}, Recall: {recall:.4f}, F1-Score: {f1:.4f}')
 
-# compare with pytorch cnn results in cnn_evaluation.txt then save to onnx_evaluation.txt belong with pytorch results to compare
-with open('cnn/cnn_evaluation.txt', 'r') as f:
-    lines = f.readlines()
+# save evaluation metrics to a file
 with open('onnx/onnx_evaluation.txt', 'w') as f:
-    for line in lines:
-        # for each line write result of pytorch and onnx
-        if 'Accuracy' in line:
-            f.write(f'pytorch {line.strip()}' + f', ONNX Accuracy: {accuracy:.2f}%\n')
-        elif 'Precision' in line:
-            f.write(f'pytorch {line.strip()}' + f', ONNX Precision: {precision:.4f}\n')
-        elif 'Recall' in line:
-            f.write(f'pytorch {line.strip()}' + f', ONNX Recall: {recall:.4f}\n')
-        elif 'F1-score' in line:
-            f.write(f'pytorch {line.strip()}' + f', ONNX F1-score: {f1:.4f}\n')
+    f.write(f'Accuracy: {accuracy:.2f}%\n')
+    f.write(f'Precision: {precision:.4f}\n')
+    f.write(f'Recall: {recall:.4f}\n')
+    f.write(f'F1-score: {f1:.4f}\n')

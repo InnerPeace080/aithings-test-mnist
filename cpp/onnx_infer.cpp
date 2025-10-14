@@ -2,7 +2,9 @@
 #include <onnxruntime_cxx_api.h>
 #include <unistd.h>
 
+#include <fstream>
 #include <iostream>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -33,18 +35,35 @@ std::string get_executable_dir() {
   return "";
 }
 
-int main() {
+int main(int argc, char *argv[]) {
   Ort::Env            env(ORT_LOGGING_LEVEL_WARNING, "test");
   Ort::SessionOptions session_options;
 
   const std::string exe_path = get_executable_dir();
+  Ort::Session      session(env, (exe_path + "/../onnx/cnn.onnx").c_str(), session_options);
 
-  Ort::Session session(env, (exe_path + "/../onnx/cnn.onnx").c_str(), session_options);
-
-  // input vector
-  std::vector<float> input_tensor_values(1 * 1 * 28 * 28, 0.0f);
   // input shape
   std::vector<int64_t> input_shape = {1, 1, 28, 28};
+  std::vector<float>   input_tensor_values;
+
+  // Read input tensor values from string (first argument)
+  if (argc < 2) {
+    std::cerr << "Usage: " << argv[0] << " <input_data_string>" << std::endl;
+    input_tensor_values = std::vector<float>(1 * 1 * 28 * 28, 0.0f);  // default to all zeros
+  } else {
+    std::string        input_str(argv[1]);
+    std::istringstream iss(input_str);
+    float              val;
+    while (iss >> val) {
+      input_tensor_values.push_back(val);
+      // Accept comma separated values too
+      if (iss.peek() == ',') iss.ignore();
+    }
+    if (input_tensor_values.size() != 1 * 1 * 28 * 28) {
+      std::cerr << "Input string must contain exactly " << (1 * 1 * 28 * 28) << " float values." << std::endl;
+      return 1;
+    }
+  }
 
   Ort::AllocatorWithDefaultOptions allocator;
 
@@ -105,6 +124,17 @@ int main() {
     std::cout << output_data[i] << " ";
   }
   std::cout << std::endl;
+
+  // find the index of the max output value
+  size_t max_index = 0;
+  float  max_value = output_data[0];
+  for (size_t i = 1; i < 10; i++) {
+    if (output_data[i] > max_value) {
+      max_value = output_data[i];
+      max_index = i;
+    }
+  }
+  std::cout << "Predicted class: " << max_index << std::endl;
 
   return 0;
 }

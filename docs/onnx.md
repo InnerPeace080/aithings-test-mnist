@@ -74,25 +74,6 @@ outputs = session.run(None, inputs)
 
 ---
 
-## 7. Why Model Accuracy May Drop After ONNX Conversion
-
-You may notice a slight decrease in model accuracy after converting to ONNX. Common reasons include:
-
-1. **Operator Differences:** Some PyTorch or TensorFlow operations are not exactly replicated in ONNX, leading to small numerical differences.
-2. **Precision Loss:** ONNX may use different data types or lower precision (e.g., float32 vs float64), causing minor accuracy drops.
-3. **Unsupported Layers:** Custom or less common layers may be approximated or replaced during export, affecting results.
-4. **Export Mode:** If the model is exported in training mode instead of evaluation mode (`model.eval()`), layers like dropout or batch normalization behave differently.
-5. **Dynamic vs Static Shapes:** ONNX may handle dynamic shapes or batch sizes differently, affecting inference.
-6. **Post-processing:** Some post-processing steps (e.g., softmax, argmax) may be handled differently in ONNX Runtime.
-
-These differences are usually small, but for critical applications, always validate ONNX output against the original framework and adjust export settings or model code if needed.
-
-- Not all operations in every framework are supported by ONNX; check compatibility before exporting.
-- Some custom layers or models may require additional conversion steps.
-- ONNX is best for feedforward, convolutional, and many standard architectures; very new or custom ops may not be supported.
-
----
-
 ## 7. Example Workflow
 
 1. Train a model in PyTorch.
