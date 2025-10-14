@@ -1,13 +1,45 @@
+#include <linux/limits.h>
 #include <onnxruntime_cxx_api.h>
+#include <unistd.h>
 
 #include <iostream>
+#include <string>
 #include <vector>
+
+std::string get_executable_dir() {
+  // for linux and darwin
+#if defined(__linux__)
+  char    result[PATH_MAX];
+  ssize_t count = readlink("/proc/self/exe", result, PATH_MAX);
+  if (count != -1) {
+    std::string exec_path(result, count);
+    size_t      last_slash = exec_path.find_last_of('/');
+    if (last_slash != std::string::npos) {
+      return exec_path.substr(0, last_slash);
+    }
+  }
+
+#elif defined(__APPLE__)
+  char     result[PATH_MAX];
+  uint32_t size = sizeof(result);
+  if (_NSGetExecutablePath(result, &size) == 0) {
+    std::string exec_path(result);
+    size_t      last_slash = exec_path.find_last_of('/');
+    if (last_slash != std::string::npos) {
+      return exec_path.substr(0, last_slash);
+    }
+  }
+#endif
+  return "";
+}
 
 int main() {
   Ort::Env            env(ORT_LOGGING_LEVEL_WARNING, "test");
   Ort::SessionOptions session_options;
 
-  Ort::Session session(env, "../onnx/cnn.onnx", session_options);
+  const std::string exe_path = get_executable_dir();
+
+  Ort::Session session(env, (exe_path + "/../onnx/cnn.onnx").c_str(), session_options);
 
   // input vector
   std::vector<float> input_tensor_values(1 * 1 * 28 * 28, 0.0f);
@@ -18,12 +50,12 @@ int main() {
 
   const auto input_names = session.GetInputNames();
   // const char* input_name         = session.GetInputNameAllocated(0, allocator).get();
-  const char* input_name        = input_names[0].c_str();
+  const char *input_name        = input_names[0].c_str();
   const auto  input_type_info   = session.GetInputTypeInfo(0);
   const auto  input_tensor_info = input_type_info.GetTensorTypeAndShapeInfo();
   const auto  output_names      = session.GetOutputNames();
   // const char* output_name        = session.GetOutputNameAllocated(0, allocator).get();
-  const char* output_name        = output_names[0].c_str();
+  const char *output_name        = output_names[0].c_str();
   const auto  output_type_info   = session.GetOutputTypeInfo(0);
   const auto  output_tensor_info = output_type_info.GetTensorTypeAndShapeInfo();
 
@@ -35,7 +67,7 @@ int main() {
   std::cout << "Input Name: " << input_name << std::endl;
   std::cout << "Input Type: " << input_type_info.GetTensorTypeAndShapeInfo().GetElementType() << std::endl;
   std::cout << "Input Shape: " << input_tensor_info.GetShape().size() << "D" << std::endl;
-  for (const auto& dim : input_tensor_info.GetShape()) {
+  for (const auto &dim : input_tensor_info.GetShape()) {
     std::cout << dim << " ";
   }
   std::cout << std::endl;
@@ -48,7 +80,7 @@ int main() {
   std::cout << "Output Name: " << output_name << std::endl;
   std::cout << "Output Type: " << output_type_info.GetTensorTypeAndShapeInfo().GetElementType() << std::endl;
   std::cout << "Output Shape: " << output_tensor_info.GetShape().size() << "D" << std::endl;
-  for (const auto& dim : output_tensor_info.GetShape()) {
+  for (const auto &dim : output_tensor_info.GetShape()) {
     std::cout << dim << " ";
   }
   std::cout << std::endl;
@@ -59,14 +91,14 @@ int main() {
 
   Ort::Value input_tensor = Ort::Value::CreateTensor<float>(allocator, input_shape.data(), input_shape.size());
   // fill the input tensor with values
-  float* input_tensor_data = input_tensor.GetTensorMutableData<float>();
+  float *input_tensor_data = input_tensor.GetTensorMutableData<float>();
   for (size_t i = 0; i < input_tensor_values.size(); i++) {
     input_tensor_data[i] = input_tensor_values[i];
   }
 
   auto output_tensors = session.Run(Ort::RunOptions{nullptr}, &input_name, &input_tensor, 1, &output_name, 1);
 
-  float* output_data = output_tensors.front().GetTensorMutableData<float>();
+  float *output_data = output_tensors.front().GetTensorMutableData<float>();
   // log all output values
   std::cout << "Output values: ";
   for (size_t i = 0; i < 10; i++) {
