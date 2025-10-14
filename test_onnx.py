@@ -1,25 +1,28 @@
 import os
 
 import numpy as np
-import onnx
 import onnxruntime as ort
 import torch
 from sklearn.metrics import f1_score, precision_score, recall_score
 
+import onnx
+from cnn.cnn import CNN
 from data import test_loader
 
-torch_model = torch.load('./cnn_model.pth', map_location=torch.device('cpu'), weights_only=False)
+# torch_model = torch.load('cnn/cnn_model.pth', map_location=torch.device('cpu'), weights_only=False)
+torch_model = CNN()
+torch_model.load_state_dict(torch.load('cnn/cnn.pth', map_location='cpu'))
 torch_model.eval()
 dummy_input = torch.randn(1, 1, 28, 28)
 
 # export onnx model
-if not os.path.exists('cnn.onnx'):
+if not os.path.exists('onnx/cnn.onnx'):
     # `dynamic_axes` allow variable batch size for input and output, allow we run inference with different batch size
-    torch.onnx.export(torch_model, (dummy_input,), 'cnn.onnx', verbose=True, input_names=['input'], output_names=['output'],
+    torch.onnx.export(torch_model, (dummy_input,), 'onnx/cnn.onnx', verbose=True, input_names=['input'], output_names=['output'],
                       dynamic_axes={'input': {0: 'batch_size'}, 'output': {0: 'batch_size'}})
 
 # show graph
-onnx_model = onnx.load('cnn.onnx')
+onnx_model = onnx.load('onnx/cnn.onnx')
 onnx.checker.check_model(onnx_model)
 print(onnx.helper.printable_graph(onnx_model.graph))
 
@@ -31,7 +34,7 @@ images = images.numpy()
 print(f"images.shape:{images.shape}")
 labels = labels.numpy()
 
-ort_session = ort.InferenceSession('cnn.onnx', providers=['CPUExecutionProvider'])
+ort_session = ort.InferenceSession('onnx/cnn.onnx', providers=['CPUExecutionProvider'])
 # input_shape
 print(f"Input shape: {ort_session.get_inputs()[0].shape}")
 
@@ -55,9 +58,9 @@ f1 = f1_score(labels, predicted_class.flatten(), average='weighted')
 print(f'Precision: {precision:.4f}, Recall: {recall:.4f}, F1-Score: {f1:.4f}')
 
 # compare with pytorch cnn results in cnn_evaluation.txt then save to onnx_evaluation.txt belong with pytorch results to compare
-with open('cnn_evaluation.txt', 'r') as f:
+with open('cnn/cnn_evaluation.txt', 'r') as f:
     lines = f.readlines()
-with open('onnx_evaluation.txt', 'w') as f:
+with open('onnx/onnx_evaluation.txt', 'w') as f:
     for line in lines:
         # for each line write result of pytorch and onnx
         if 'Accuracy' in line:

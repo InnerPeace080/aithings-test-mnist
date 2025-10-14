@@ -8,7 +8,7 @@ from sklearn.metrics import f1_score, precision_score, recall_score
 from torch.utils.data import DataLoader, Dataset
 
 from data import test_loader, train_loader
-from simple_net import SimpleNet
+from simple_net.simple_net import SimpleNet
 
 # # display a sample image
 
@@ -23,7 +23,7 @@ number_of_hidden_neurons = 128
 model = SimpleNet(number_of_hidden_neurons).to(device)
 
 # if `simple_net.pth` not exist, train the model
-if not os.path.exists('simple_net.pth'):
+if not os.path.exists('simple_net/simple_net.pth'):
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     criterion = torch.nn.CrossEntropyLoss()
 
@@ -51,7 +51,7 @@ if not os.path.exists('simple_net.pth'):
         print(f'Epoch [{epoch + 1}/{number_of_epochs}], Loss: {avg_loss:.4f}')
 
     # save the model
-    torch.save(model.state_dict(), 'simple_net.pth')
+    torch.save(model.state_dict(), 'simple_net/simple_net.pth')
 
     #  print weights and biases of the first layer
     print("Weights of the first layer:")
@@ -60,7 +60,7 @@ if not os.path.exists('simple_net.pth'):
     print(model.fc1.bias)
 
 # load model from file and display some predictions
-model.load_state_dict(torch.load('simple_net.pth'))
+model.load_state_dict(torch.load('simple_net/simple_net.pth'))
 model.eval()
 with torch.no_grad():
     correct = 0
@@ -85,7 +85,7 @@ with torch.no_grad():
     print(f'Precision: {precision:.4f}, Recall: {recall:.4f}, F1-Score: {f1:.4f}')
 
     # write evaluation metrics to a file
-    with open('simple_net_evaluation.txt', 'w') as f:
+    with open('simple_net/simple_net_evaluation.txt', 'w') as f:
         f.write(f'Accuracy: {accuracy:.2f}%\n')
         f.write(f'Precision: {precision:.4f}\n')
         f.write(f'Recall: {recall:.4f}\n')

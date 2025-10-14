@@ -5,14 +5,14 @@ import torch
 from matplotlib import pyplot as plt
 from sklearn.metrics import f1_score, precision_score, recall_score
 
-from cnn import CNN
+from cnn.cnn import CNN
 from data import test_loader, train_loader
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 print(f'Using device: {device}')
 model = CNN().to(device)
 
-if not os.path.exists('cnn.pth'):
+if not os.path.exists('cnn/cnn.pth'):
     optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     criterion = torch.nn.CrossEntropyLoss()
 
@@ -40,11 +40,11 @@ if not os.path.exists('cnn.pth'):
         print(f'Epoch [{epoch+1}/{number_of_epochs}], Loss: {avg_loss:.4f}')
 
     # save the model
-    torch.save(model.state_dict(), 'cnn.pth')
+    torch.save(model.state_dict(), 'cnn/cnn.pth')
     # save the entire model
-    torch.save(model, 'cnn_model.pth')
+    torch.save(model, 'cnn/cnn_model.pth')
 
-model.load_state_dict(torch.load('cnn.pth'))
+model.load_state_dict(torch.load('cnn/cnn.pth'))
 model.eval()
 with torch.no_grad():
     correct = 0
@@ -70,7 +70,7 @@ with torch.no_grad():
     print(f'F1-score: {f1:.4f}')
 
     # write evaluation metrics to a file
-    with open('cnn_evaluation.txt', 'w') as f:
+    with open('cnn/cnn_evaluation.txt', 'w') as f:
         f.write(f'Accuracy: {accuracy:.2f}%\n')
         f.write(f'Precision: {precision:.4f}\n')
         f.write(f'Recall: {recall:.4f}\n')
