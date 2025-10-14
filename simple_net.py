@@ -3,13 +3,13 @@ import torch.nn.functional as F
 
 
 class SimpleNet(nn.Module):
-    def __init__(self):
+    def __init__(self, hidden_units=128):
         super().__init__()
-        # one hidden layer have 128 neurons
+        # one hidden layer have
         # First fully connected layer
-        self.fc1 = nn.Linear(28 * 28, 128)
+        self.fc1 = nn.Linear(28 * 28, hidden_units)
         # Second fully connected layer
-        self.fc2 = nn.Linear(128, 10)
+        self.fc2 = nn.Linear(hidden_units, 10)
 
     def forward(self, x):
         # flatten the input image
