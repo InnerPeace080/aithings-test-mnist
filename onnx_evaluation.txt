@@ -1,0 +1,4 @@
+pytorch Accuracy: 98.97%, ONNX Accuracy: 98.44%
+pytorch Precision: 0.9898, ONNX Precision: 0.9868
+pytorch Recall: 0.9897, ONNX Recall: 0.9844
+pytorch F1-score: 0.9897, ONNX F1-score: 0.9848

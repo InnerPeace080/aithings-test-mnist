@@ -41,6 +41,8 @@ if not os.path.exists('cnn.pth'):
 
     # save the model
     torch.save(model.state_dict(), 'cnn.pth')
+    # save the entire model
+    torch.save(model, 'cnn_model.pth')
 
 model.load_state_dict(torch.load('cnn.pth'))
 model.eval()

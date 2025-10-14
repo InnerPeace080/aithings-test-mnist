@@ -5,4 +5,5 @@ dependencies:
   - pytorch
   - matplotlib
   - scikit-learn
-  
+  - onnx
+  - onnxruntime
