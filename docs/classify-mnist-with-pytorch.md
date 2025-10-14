@@ -133,7 +133,7 @@ class SimpleNet(nn.Module):
 **ReLU (Rectified Linear Unit):**
 
 $$
- ext{ReLU}(x) = \max(0, x)
+ \text{ReLU}(x) = \max(0, x)
 $$
 
 This means for any input $x$, if $x$ is positive, ReLU returns $x$; if $x$ is negative, it returns $0$.
