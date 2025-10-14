@@ -322,6 +322,39 @@ print(f"Test Accuracy: {accuracy:.4f}")
 
 ## 8. Advanced Architectures in Deep Learning
 
+---
+
+## 9. K-Fold Cross-Validation and StratifiedKFold
+
+### What is K-Fold Cross-Validation?
+
+K-Fold Cross-Validation is a technique for evaluating model performance and robustness. The dataset is split into $k$ equal parts (folds). The model is trained on $k-1$ folds and validated on the remaining fold. This process repeats $k$ times, each time with a different fold as the validation set. The final score is the average of all $k$ validation results.
+
+**Benefits:**
+
+- Provides a more reliable estimate of model performance.
+- Reduces risk of overfitting to a single train/test split.
+
+### What is StratifiedKFold?
+
+StratifiedKFold is a variant of k-fold cross-validation that preserves the percentage of samples for each class in every fold. This is especially important for classification tasks with imbalanced classes, ensuring each fold is representative of the overall class distribution.
+
+**Example Usage (with scikit-learn):**
+
+```python
+from sklearn.model_selection import StratifiedKFold
+skf = StratifiedKFold(n_splits=5)
+for train_index, val_index in skf.split(X, y):
+    X_train, X_val = X[train_index], X[val_index]
+    y_train, y_val = y[train_index], y[val_index]
+    # Train and validate your model here
+```
+
+**Summary:**
+
+- K-Fold Cross-Validation helps assess model generalization.
+- StratifiedKFold ensures balanced class representation in each fold, leading to fairer and more robust evaluation for classification problems like MNIST.
+
 Advanced architectures go beyond simple CNNs to solve more complex tasks, improve accuracy, and address challenges like vanishing gradients and computational efficiency.
 
 ### Examples of Advanced Architectures
