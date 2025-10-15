@@ -55,7 +55,6 @@ precision = precision_score(all_labels, all_preds, average='weighted')
 recall = recall_score(all_labels, all_preds, average='weighted')
 f1 = f1_score(all_labels, all_preds, average='weighted')
 print(f'Accuracy: {accuracy:.2f}%, Precision: {precision:.4f}, Recall: {recall:.4f}, F1-score: {f1:.4f}')
-print(f'Accuracy: {accuracy:.2f}%, Precision: {precision:.4f}, Recall: {recall:.4f}, F1-score: {f1:.4f}')
 
 # write evaluation metrics to a file
 with open('cpp/cpp_evaluation.txt', 'w') as f:
