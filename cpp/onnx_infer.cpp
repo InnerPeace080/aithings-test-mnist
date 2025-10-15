@@ -1,4 +1,12 @@
+
+#if defined(__linux__)
 #include <linux/limits.h>
+#endif
+
+#if defined(__APPLE__)
+#include <mach-o/dyld.h>
+#endif
+
 #include <onnxruntime_cxx_api.h>
 #include <unistd.h>
 
@@ -35,7 +43,7 @@ std::string get_executable_dir() {
   return "";
 }
 
-int main(int argc, char *argv[]) {
+int main(int argc, char* argv[]) {
   Ort::Env            env(ORT_LOGGING_LEVEL_WARNING, "test");
   Ort::SessionOptions session_options;
 
@@ -69,12 +77,12 @@ int main(int argc, char *argv[]) {
 
   const auto input_names = session.GetInputNames();
   // const char* input_name         = session.GetInputNameAllocated(0, allocator).get();
-  const char *input_name        = input_names[0].c_str();
+  const char* input_name        = input_names[0].c_str();
   const auto  input_type_info   = session.GetInputTypeInfo(0);
   const auto  input_tensor_info = input_type_info.GetTensorTypeAndShapeInfo();
   const auto  output_names      = session.GetOutputNames();
   // const char* output_name        = session.GetOutputNameAllocated(0, allocator).get();
-  const char *output_name        = output_names[0].c_str();
+  const char* output_name        = output_names[0].c_str();
   const auto  output_type_info   = session.GetOutputTypeInfo(0);
   const auto  output_tensor_info = output_type_info.GetTensorTypeAndShapeInfo();
 
@@ -86,7 +94,7 @@ int main(int argc, char *argv[]) {
   std::cout << "Input Name: " << input_name << std::endl;
   std::cout << "Input Type: " << input_type_info.GetTensorTypeAndShapeInfo().GetElementType() << std::endl;
   std::cout << "Input Shape: " << input_tensor_info.GetShape().size() << "D" << std::endl;
-  for (const auto &dim : input_tensor_info.GetShape()) {
+  for (const auto& dim : input_tensor_info.GetShape()) {
     std::cout << dim << " ";
   }
   std::cout << std::endl;
@@ -99,7 +107,7 @@ int main(int argc, char *argv[]) {
   std::cout << "Output Name: " << output_name << std::endl;
   std::cout << "Output Type: " << output_type_info.GetTensorTypeAndShapeInfo().GetElementType() << std::endl;
   std::cout << "Output Shape: " << output_tensor_info.GetShape().size() << "D" << std::endl;
-  for (const auto &dim : output_tensor_info.GetShape()) {
+  for (const auto& dim : output_tensor_info.GetShape()) {
     std::cout << dim << " ";
   }
   std::cout << std::endl;
@@ -110,14 +118,14 @@ int main(int argc, char *argv[]) {
 
   Ort::Value input_tensor = Ort::Value::CreateTensor<float>(allocator, input_shape.data(), input_shape.size());
   // fill the input tensor with values
-  float *input_tensor_data = input_tensor.GetTensorMutableData<float>();
+  float* input_tensor_data = input_tensor.GetTensorMutableData<float>();
   for (size_t i = 0; i < input_tensor_values.size(); i++) {
     input_tensor_data[i] = input_tensor_values[i];
   }
 
   auto output_tensors = session.Run(Ort::RunOptions{nullptr}, &input_name, &input_tensor, 1, &output_name, 1);
 
-  float *output_data = output_tensors.front().GetTensorMutableData<float>();
+  float* output_data = output_tensors.front().GetTensorMutableData<float>();
   // log all output values
   std::cout << "Output values: ";
   for (size_t i = 0; i < 10; i++) {
